@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+	</script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+	<!---CSS -->
+	<link rel="stylesheet" href="./css/main.css">
+
+	<!-- Boxicons CSS-->
+	<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$( "#form" ).submit(function(event) {
+				event.preventDefault();
+				$.ajax({
+					type: 'POST',
+					url: '/login',
+					data: $('#form').serialize(),
+					dataType: "json",
+					success: function(response){
+						//alert("a");
+						//console.log(response.Success);
+						$('#form')[0].reset();
+						document.getElementById("check").innerHTML=response.Success;
+         					//ADD THIS CODE
+         					setTimeout(function(){
+         						document.getElementById("check").innerHTML="";
+         					},3000);
+         					if (response.Success=="Success!") {
+         						document.getElementById("aa").click();
+         					};
+         				},
+         				error: function() {
+         				}
+         			})
+			});
+		});
+	</script>
+</head>
+
+<body>
+
+<section class="container forms">
+	<div class="form-content">
+		<div class="form login">
+			<header>Login</header>
+
+			<div class="form-group">
+				<form id="form" method="post">
+					<div class="field input-field">
+						<input type="text" name="email" placeholder="E-mail" required="" class="form-control"><br/>
+					</div>
+	
+					<div class="field input-field">
+						<input type="password" name="password" placeholder="Password" required="" class="form-control"><br/>
+						<i class='bx bx-hide eye-icon'></i>
+					</div>
+	
+					<div class="field button-field">
+						<input type="submit" value="Login" class="btn btn-success">
+					</div>
+					<div class="mssg bg-danger">
+						<span id="check" ></span>
+					</div>
+					<div id="LangTable"><a href="/profile" id="aa"></a>
+					</div>
+
+					<div class="form-link">
+						<span>Olvido su contrasena? <a href="/forgetpass"> Click Aqui</a></span>
+					</div>
+	
+					<div class="form-link">
+						<span>Crear una nueva cuenta? <a href="/"> Click Aqui</a></span>
+					</div>
+				</form>
+	
+				<div class="line"></div>
+	
+				<div class="media-options">
+					<a href="#" class="field facebook">
+						<i class='bx bxl-facebook facebook-icon'></i>
+						<span>Login con Facebook</span>
+					</a>
+				</div>
+	
+				<div class="media-options">
+					<a href="#" class="field google">
+						<i class='bx bxl-google google-icon'></i>
+						<span>Login con Google</span>
+					</a>
+				</div>
+			</div>			
+		</div>
+	</div>
+</section>
+		
+		
+	
+		<!--Comentario->
+		<div>
+			<p>Login</p>
+		</div>
+		<div class="form-group">
+			<form id="form" method="post" >
+				<input type="text" name="email" placeholder="E-mail" required="" class="form-control"><br/>
+				<input type="password" name="password" placeholder="Password" required="" class="form-control"><br/>
+				<input type="submit" value="Login" class="btn btn-success">
+			</form>
+		</div>
+		<div class="mssg bg-danger">
+			<span id="check" ></span>
+		</div>
+		<div id="LangTable"><a href="/profile" id="aa"></a>
+		</div>
+		<div><span>Do you forgot password?</span><a href="/forgetpass">Click here</a>
+		<div><span>Create a new Account?</span><a href="/">Register here</a>
+
+		</div>
+			-->
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta charset="UTF-8">
+        <title>Prueba</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
+	</script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="./css/main.css">
+
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+	<script src="https://d3js.org/d3.v7.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
+
+	
+	<style type="text/css">
+        #map {
+			width: 95%;
+   			height: 600px;
+			margin-left: 39px;
+    		margin-top: 20px;
+			margin-bottom: 20px;
+        }
+    </style>
+
+
+
+
+	<style>
+		.center {
+		  display: flex;
+		  justify-content: flex-start;
+		  align-items: flex-start;
+		}
+	  </style>
+	  <style>
+		body {
+		  margin: 0;
+		  padding: 0;
+		  overflow: scroll;
+		}
+	  </style>
+
+
+</head>
+<body >
+	
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+		  <div class="navbar-header">
+			<a class="navbar-brand" href="#">Flight Simulation</a>
+		  </div>
+		  <ul class="nav navbar-nav">
+			<li class="active"><a href="/profile">Home</a></li>
+			<li class="active"><a  href="/insert">Insertar archivos </a></li>
+			</li>
+			<li><a href="#">Page 2</a></li>
+		  </ul>
+		  <ul class="nav navbar-nav navbar-right">
+			<li class="dropdown-toggle"><a class="glyphicon glyphicon-user" data-toggle="dropdown"> <%=name%></a>
+				<ul class="dropdown-menu">
+					<li><td><%= name %></td></li>
+					<li><td><%= email %></td></li>
+				  </ul>
+			</li>
+			<li><a href="/logout""><span class="glyphicon glyphicon-log-in"></span> Logout </a></li>
+		  </ul>
+		</div>
+	  </nav>
+	  <input type="file" id="csv-input">
+	  <div id="map"></div>
+	  <canvas id="grafica"></canvas>
+	
+	  <script>
+		var map = L.map('map', {
+			minZoom: 0,
+			maxZoom: 19,
+			zoomSnap:0.50
+		}).setView([-0.22985, -78.52495], 12);
+	var markersLayer = L.layerGroup().addTo(map);
+	L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+			}).addTo(map);
+
+	  const $grafica = document.querySelector("#grafica");
+	  const etiquetas = [-3,-4,2,8];
+	  const datosVentas2020 = {
+		label: "Ruta",
+		data: [-70.50,-71.25,-65.30,10], // La data es un arreglo que debe tener la misma cantidad de valores que la cantidad de etiquetas
+		backgroundColor: 'rgba(54, 162, 235, 0.2)', // Color de fondo
+		borderColor: 'rgba(54, 162, 235, 1)', // Color del borde
+		borderWidth: 1,// Ancho del borde
+	   };
+	new Chart($grafica, {
+    type: 'line',// Tipo de gráfica
+    data: {
+        labels: etiquetas,
+        datasets: [
+		datosVentas2020,
+            // Aquí más datos...
+        ]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }],
+        },
+    }
+});
+	
+	// Función para leer el archivo CSV
+	function readCSVFile(input) {
+	  var reader = new FileReader();
+	  reader.onload = function() {
+		var data = this.result;
+		var markers = data.split('\n');
+	
+		// Agrega los marcadores al mapa
+		markersLayer.clearLayers();
+		for (var i = 0; i < markers.length; i++) {
+		  var marker = markers[i].split(';');
+		  var latLng = [marker[0], marker[1]];		
+		  var newMarker = L.circle(latLng,{
+			color: 'red',
+    		fillColor: '#f03',
+    		fillOpacity: 0.5,
+    		radius: 0,
+			weight: 4
+		  });
+		  markersLayer.addLayer(newMarker);
+		  newMarker.bindPopup( "<b>Estabilidad de lectura=<b>"+marker[3]+ "<br>"+
+		  "<b>Número de satélites=<b>"+marker[4]+"<br>"+
+		  "<b>Fecha=<b>"+marker[5]+"<br>"+
+		  "<b>Hora=<b>"+marker[6]+"<br>"+
+		  "<b>Estabilidad de secuencia=<b>"+marker[7] +"<br>"+
+		  "<b>Altitud=<b>"+marker[8]);
+		}
+		
+	// Centra el mapa en los marcadores
+		var bounds = markersLayer.getBounds();
+		map.fitBounds(bounds);		
+	  };
+
+	 
+	  
+	  reader.readAsText(input.files[0]);
+	  
+	}
+
+	// Escucha el evento de clic en el botón para leer el archivo CSV
+	document.getElementById('csv-input').addEventListener('change', function() {
+	  readCSVFile(this);
+	
+	});
+	
+	  </script>
+	  
+</body>
+</html>
